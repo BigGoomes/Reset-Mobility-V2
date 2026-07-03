@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Reset — Daily Mobility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A1410;
+    --surface:#101E17;
+    --surface-2:#16281F;
+    --surface-3:#1C3226;
+    --line:#233A2C;
+    --gold:#C9A24B;
+    --gold-bright:#E4C169;
+    --green:#3C8358;
+    --green-bright:#5FBE83;
+    --text:#F2EFE6;
+    --text-dim:#A9B8AC;
+    --text-faint:#6F8375;
+    --red:#C15B4A;
+    --orange:#CE8A3E;
+    --yellow:#D6BB4C;
+    --radius:16px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at top, #0E1B14 0%, #0A1410 55%, #070D0A 100%);
+    color:var(--text);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    padding-bottom:88px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .eyebrow{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:11px;
+    color:var(--gold);
+    font-weight:500;
+  }
+  .container{max-width:520px; margin:0 auto; padding:0 18px;}
+  .topbar{ padding:22px 18px 10px; max-width:520px; margin:0 auto; }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px;
+    background:linear-gradient(145deg, var(--green-bright), var(--green) 70%);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald', sans-serif; font-weight:700; color:#0A1410; font-size:15px;
+  }
+  .brand-title{font-size:20px; font-weight:600; letter-spacing:0.03em;}
+  .brand-sub{font-size:11.5px; color:var(--text-faint); margin-top:1px; letter-spacing:0.04em;}
+
+  .tabbar{
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(16,30,23,0.92);
+    backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-around;
+    padding:9px 6px calc(9px + env(safe-area-inset-bottom));
+    z-index:50;
+  }
+  .tab-btn{
+    background:none; border:none; color:var(--text-faint);
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    font-family:'Oswald', sans-serif; font-size:10.5px; letter-spacing:0.06em;
+    text-transform:uppercase; padding:6px 10px; border-radius:10px;
+    cursor:pointer; transition:color .15s ease;
+  }
+  .tab-btn.active{color:var(--gold-bright);}
+  .tab-btn svg{width:21px; height:21px;}
+
+  .view{display:none; padding:6px 18px 30px; max-width:520px; margin:0 auto; animation:fade .25s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:linear-gradient(180deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+  }
+
+  .ring-wrap{display:flex; flex-direction:column; align-items:center; padding:14px 0 6px;}
+  .ring-svg{filter:drop-shadow(0 0 18px rgba(228,193,105,0.12));}
+  .ring-label{font-family:'Oswald',sans-serif; font-size:42px; font-weight:600; fill:var(--text);}
+  .ring-pct{font-family:'Oswald',sans-serif; font-size:15px; fill:var(--gold-bright);}
+  .ring-caption{margin-top:10px; font-size:12.5px; color:var(--text-faint); text-align:center;}
+
+  .btn{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase; letter-spacing:0.06em; font-size:13.5px; font-weight:600;
+    border:none; border-radius:12px; padding:14px 18px;
+    cursor:pointer; width:100%; text-align:center;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#1A1207;}
+  .btn-secondary{background:var(--surface-3); color:var(--text); border:1px solid var(--line);}
+  .btn-ghost{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
+  .btn-row{display:flex; gap:10px;}
+
+  .section-title{font-size:19px; margin-bottom:4px;}
+  .section-sub{font-size:13px; color:var(--text-faint); margin-bottom:16px;}
+
+  .day-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;
+    cursor:pointer;
+  }
+  .day-card.today{border-color:var(--gold); box-shadow:0 0 0 1px rgba(201,162,75,0.35) inset;}
+  .day-num{
+    font-family:'Oswald',sans-serif; font-size:22px; font-weight:700;
+    color:var(--text-faint); width:30px; flex-shrink:0;
+  }
+  .day-card.today .day-num{color:var(--gold-bright);}
+  .day-info{flex:1; min-width:0;}
+  .day-name{font-size:15px; font-weight:600; font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:0.02em;}
+  .day-meta{font-size:12px; color:var(--text-faint); margin-top:2px;}
+  .badge{
+    font-family:'Oswald',sans-serif; font-size:9.5px; text-transform:uppercase; letter-spacing:0.08em;
+    padding:3px 7px; border-radius:6px; font-weight:600; white-space:nowrap;
+  }
+  .badge-priority{background:rgba(193,91,74,0.16); color:#E39280;}
+  .badge-maint{background:rgba(95,190,131,0.14); color:var(--green-bright);}
+  .badge-tag{background:var(--surface-3); color:var(--text-dim);}
+
+  .ex-card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;
+  }
+  .ex-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .ex-name{font-family:'Oswald',sans-serif; font-size:15.5px; text-transform:uppercase; letter-spacing:0.02em;}
+  .ex-dur{font-size:12px; color:var(--text-faint); white-space:nowrap; margin-top:2px;}
+  .ex-tags{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;}
+  .ex-toggle{
+    margin-top:10px; font-size:12.5px; color:var(--gold-bright); cursor:pointer;
+    display:flex; align-items:center; gap:5px; font-weight:600;
+  }
+  .ex-detail{display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--line);}
+  .ex-detail.open{display:block;}
+  .ex-detail p{font-size:13.5px; line-height:1.55; color:var(--text-dim); margin:0 0 8px;}
+  .ex-detail .why{color:var(--text-faint); font-size:12.5px; font-style:italic;}
+  .ex-detail .label{color:var(--gold); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;}
+
+  .dot{width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:5px;}
+
+  .focus-overlay{
+    position:fixed; inset:0; background:#080F0B; z-index:100;
+    display:none; flex-direction:column;
+  }
+  .focus-overlay.active{display:flex;}
+  .focus-top{padding:18px 20px 4px; display:flex; justify-content:space-between; align-items:center;}
+  .focus-close{background:none;border:none;color:var(--text-faint);font-size:22px;cursor:pointer;padding:6px;}
+  .focus-progress{flex:1; display:flex; gap:4px; margin:0 14px;}
+  .focus-progress .seg{height:3px; flex:1; border-radius:2px; background:var(--surface-3);}
+  .focus-progress .seg.done{background:var(--green-bright);}
+  .focus-progress .seg.current{background:var(--gold-bright);}
+  .focus-body{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px 26px; text-align:center;}
+  .focus-eyebrow{color:var(--gold); font-family:'Oswald',sans-serif; letter-spacing:0.14em; font-size:12px; text-transform:uppercase;}
+  .focus-name{font-family:'Oswald',sans-serif; font-size:28px; text-transform:uppercase; margin:10px 0 4px; line-height:1.15;}
+  .focus-side{color:var(--text-faint); font-size:14px; margin-bottom:22px;}
+  .focus-timer{
+    width:220px; height:220px; border-radius:50%;
+    border:2px solid var(--surface-3);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; margin-bottom:16px;
+  }
+  .focus-timer svg{position:absolute; top:0; left:0; transform:rotate(-90deg);}
+  .focus-timer-num{font-family:'Oswald',sans-serif; font-size:56px; font-weight:600;}
+  .focus-hint{font-size:12px; color:var(--text-faint); margin-bottom:18px; letter-spacing:0.03em;}
+  .focus-cue{font-size:14px; color:var(--text-dim); line-height:1.6; max-width:340px;}
+  .focus-controls{display:flex; gap:14px; padding:20px 26px calc(26px + env(safe-area-inset-bottom));}
+  .focus-btn{
+    flex:1; padding:15px; border-radius:12px; border:1px solid var(--line);
+    background:var(--surface-2); color:var(--text); font-family:'Oswald',sans-serif;
+    text-transform:uppercase; letter-spacing:0.06em; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .focus-btn.primary{background:linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#1A1207; border:none;}
+
+  .complete-card{text-align:center; padding:40px 26px;}
+  .complete-check{width:64px; height:64px; margin:0 auto 18px; border-radius:50%; background:rgba(95,190,131,0.15); display:flex; align-items:center; justify-content:center;}
+
+  .score-row{margin-bottom:14px;}
+  .score-row-top{display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;}
+  .score-row-top .name{color:var(--text-dim); font-weight:500;}
+  .score-row-top .val{font-family:'Oswald',sans-serif; font-weight:600;}
+  .bar-track{height:7px; background:var(--surface-3); border-radius:5px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:5px; transition:width .5s ease;}
+  .group-header{font-family:'Oswald',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin:16px 0 8px; padding-top:12px; border-top:1px solid var(--line);}
+  .group-header:first-child{margin-top:0; padding-top:0; border-top:none;}
+
+  .test-item{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .test-item .tdate{font-size:13px; font-weight:600;}
+  .test-item .tglobal{font-family:'Oswald',sans-serif; color:var(--gold-bright); font-size:16px;}
+
+  .slider-row{margin-bottom:20px;}
+  .slider-row label{font-size:14px; font-weight:600; display:block; margin-bottom:3px;}
+  .slider-row .test-instr{font-size:12.5px; color:var(--text-faint); margin-bottom:10px; line-height:1.5;}
+  input[type=range]{ -webkit-appearance:none; width:100%; height:6px; border-radius:4px; background:var(--surface-3); outline:none; }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--gold-bright); border:3px solid #1A1207; cursor:pointer; }
+  .slider-val{text-align:right; font-family:'Oswald',sans-serif; color:var(--gold-bright); font-size:14px; margin-top:2px;}
+
+  .log-item{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:12px 14px; margin-bottom:8px;
+  }
+  .log-item .ldate{font-size:13.5px; font-weight:600;}
+  .log-item .lmeta{font-size:11.5px; color:var(--text-faint); margin-top:2px;}
+  .log-del{background:none; border:none; color:var(--text-faint); font-size:18px; cursor:pointer; padding:4px 8px;}
+
+  .streak-strip{display:flex; gap:10px; margin-bottom:16px;}
+  .streak-box{flex:1; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:12px 14px; text-align:center;}
+  .streak-box .num{font-family:'Oswald',sans-serif; font-size:24px; font-weight:700; color:var(--gold-bright);}
+  .streak-box .lbl{font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;}
+
+  .empty{text-align:center; padding:36px 20px; color:var(--text-faint); font-size:13.5px; line-height:1.6;}
+
+  .note{
+    background:rgba(201,162,75,0.08); border:1px solid rgba(201,162,75,0.25);
+    border-radius:var(--radius-sm); padding:12px 14px; font-size:12.5px;
+    color:var(--text-dim); line-height:1.55; margin-bottom:14px;
+  }
+  .note.caution{background:rgba(206,138,62,0.09); border-color:rgba(206,138,62,0.28);}
+
+  .freq-toggle{display:flex; gap:8px; margin-bottom:16px;}
+  .freq-btn{flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--text-dim); font-family:'Oswald',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; cursor:pointer;}
+  .freq-btn.active{background:var(--surface-3); color:var(--gold-bright); border-color:var(--gold);}
+
+  .chips-row{display:flex; flex-wrap:wrap; margin-bottom:6px;}
+  .chip{display:inline-block; padding:5px 11px; border-radius:20px; background:var(--surface-3); border:1px solid var(--line); font-size:11.5px; color:var(--text-dim); margin:0 6px 6px 0;}
+
+  ::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">R</div>
+    <div>
+      <div class="brand-title">Reset</div>
+      <div class="brand-sub">Daily mobility · off-season</div>
+    </div>
+  </div>
+</div>
+
+<!-- TODAY VIEW -->
+<div class="view active" id="view-today">
+  <div class="card" style="text-align:center; padding:22px 18px;">
+    <div class="eyebrow" id="today-eyebrow">Loading…</div>
+    <h1 style="font-size:24px; margin:6px 0 4px;" id="today-title">Loading…</h1>
+    <div style="font-size:13px; color:var(--text-faint);" id="today-meta">— min · — moves</div>
+  </div>
+
+  <div id="today-note-slot"></div>
+
+  <div id="today-exercise-list"></div>
+
+  <button class="btn btn-primary" id="start-session-btn" style="margin-top:6px;">Start today's session</button>
+  <div style="text-align:center; margin-top:12px;">
+    <span style="font-size:12px; color:var(--text-faint);">Not day <span id="today-daynum-inline"></span> today? <a href="#" id="change-day-link" style="color:var(--gold-bright); text-decoration:none;">Pick a different day</a></span>
+  </div>
+</div>
+
+<!-- WEEK VIEW -->
+<div class="view" id="view-week">
+  <div class="section-title">The 7‑day cycle</div>
+  <div class="section-sub" id="week-sub">Rebuilt automatically after every test to target whatever's lagging. Tap any day to load it into Today.</div>
+  <button class="btn btn-secondary" id="shuffle-btn" style="margin-bottom:16px;">Shuffle this week's exercises</button>
+  <div id="week-list"></div>
+</div>
+
+<!-- SCORE VIEW -->
+<div class="view" id="view-score">
+  <div class="card ring-wrap">
+    <svg class="ring-svg" width="200" height="200" viewBox="0 0 200 200" id="ring-svg"></svg>
+    <div class="ring-caption" id="ring-caption">—</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title" style="font-size:16px; margin-bottom:10px;">Currently prioritizing</div>
+    <div class="chips-row" id="focus-chips"></div>
+    <div style="font-size:12px; color:var(--text-faint); line-height:1.55;">After every test, Reset re-weights your 7-day plan — lower scores and stalled areas get more time, big improvements get slightly less so focus can shift to what's still lagging.</div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="section-title" style="margin-bottom:0; font-size:16px;">Category breakdown</div>
+      <div class="eyebrow" id="last-test-date">—</div>
+    </div>
+    <div id="score-bars"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title" style="margin-bottom:6px; font-size:16px;">Next test</div>
+    <div style="font-size:13px; color:var(--text-dim); margin-bottom:12px;" id="next-test-line">—</div>
+    <div class="freq-toggle">
+      <button class="freq-btn" data-freq="14">Every 2 weeks</button>
+      <button class="freq-btn" data-freq="30">Every month</button>
+    </div>
+    <button class="btn btn-primary" id="open-test-btn">Log a mobility test</button>
+  </div>
+
+  <div class="card" id="test-history-card" style="display:none;">
+    <div class="section-title" style="font-size:16px; margin-bottom:12px;">Test history</div>
+    <div id="test-history-list"></div>
+  </div>
+</div>
+
+<!-- LOG VIEW -->
+<div class="view" id="view-log">
+  <div class="section-title">Session log</div>
+  <div class="section-sub">Every completed session, tracked.</div>
+  <div class="streak-strip">
+    <div class="streak-box"><div class="num" id="streak-current">0</div><div class="lbl">Day streak</div></div>
+    <div class="streak-box"><div class="num" id="streak-total">0</div><div class="lbl">Total sessions</div></div>
+    <div class="streak-box"><div class="num" id="streak-minutes">0</div><div class="lbl">Minutes logged</div></div>
+  </div>
+  <div id="log-list"></div>
+</div>
+
+<div class="tabbar">
+  <button class="tab-btn active" data-view="today">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+    Today
+  </button>
+  <button class="tab-btn" data-view="week">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+    Week
+  </button>
+  <button class="tab-btn" data-view="score">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 5v7l5 3"/></svg>
+    Score
+  </button>
+  <button class="tab-btn" data-view="log">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+    Log
+  </button>
+</div>
+
+<div class="focus-overlay" id="focus-overlay">
+  <div class="focus-top">
+    <button class="focus-close" id="focus-close-btn">✕</button>
+    <div class="focus-progress" id="focus-progress"></div>
+    <div style="width:34px;"></div>
+  </div>
+  <div class="focus-body" id="focus-body"></div>
+  <div class="focus-controls" id="focus-controls">
+    <button class="focus-btn" id="focus-prev-btn">Back</button>
+    <button class="focus-btn primary" id="focus-playpause-btn">Start</button>
+    <button class="focus-btn" id="focus-next-btn">Skip</button>
+  </div>
+</div>
+
+<div class="focus-overlay" id="test-overlay">
+  <div class="focus-top">
+    <button class="focus-close" id="test-close-btn">✕</button>
+    <div class="eyebrow" style="flex:1; text-align:center;">Mobility test</div>
+    <div style="width:34px;"></div>
+  </div>
+  <div style="flex:1; overflow-y:auto; padding:10px 22px 30px;" id="test-form"></div>
+  <div class="focus-controls">
+    <button class="focus-btn primary" id="test-save-btn" style="flex:1;">Save test</button>
+  </div>
+</div>
+
+<script>
+// ================= SUBCATEGORIES =================
+const SUBCATS = [
+  {key:'shoulder_internal', group:'shoulders', label:'Shoulder internal rotation',
+   test:"Reach one arm up behind your back, palm facing out, as high as you can toward your shoulder blades. Rate how high you reach."},
+  {key:'shoulder_external', group:'shoulders', label:'Shoulder external rotation',
+   test:"Reach one arm overhead and behind your head, aiming to touch between your shoulder blades. Rate how far you reach."},
+  {key:'overhead_flexion', group:'overhead', label:'Overhead flexion',
+   test:"Back against a wall, raise both arms straight overhead keeping your lower back flat against it. Rate how close your arms get to the wall."},
+  {key:'overhead_squat', group:'overhead', label:'Overhead squat',
+   test:"Hold a stick overhead, squat as low as you can keeping the stick vertical and heels down. Rate how close to a full, controlled squat you get."},
+  {key:'thorax_rotation', group:'thorax', label:'Thoracic rotation',
+   test:"Sit cross-legged, cross your arms over your chest, and rotate as far as you can each way. Rate the range."},
+  {key:'hip_external', group:'hips', label:'Hip external rotation',
+   test:"Sit in a 90/90 position and lift both knees off the floor without your hands. Rate how easily you lift and hold it."},
+  {key:'hip_flexion', group:'hips', label:'Hip flexion',
+   test:"Lying on your back, pull one knee toward your chest. Rate how close your thigh gets to your chest."},
+  {key:'hip_abduction', group:'hips', label:'Hip abduction',
+   test:"Standing side-on to a wall for balance, lift your outside leg out to the side, knee straight. Rate the height you reach."},
+  {key:'postchain', group:'postchain', label:'Posterior chain',
+   test:"Sit with legs straight out in front, reach for your toes without forcing it. Rate how close you get."},
+  {key:'ankle_flexion', group:'ankles', label:'Ankle dorsiflexion',
+   test:"Kneel facing a wall, slide your foot back until your knee just touches the wall while your heel stays flat. Rate the distance vs. last time. Keep this pain-free given your ankle history."}
+];
+const GROUPS = {
+  shoulders:{label:'Shoulders', color:'#5FBE83'},
+  overhead:{label:'Overhead', color:'#7FCB8B'},
+  thorax:{label:'Thorax', color:'#4FA6A0'},
+  hips:{label:'Hips', color:'#CE8A3E'},
+  postchain:{label:'Posterior Chain', color:'#C15B4A'},
+  ankles:{label:'Ankles', color:'#D6BB4C'}
+};
+function subcatByKey(k){ return SUBCATS.find(s=>s.key===k); }
+function scoreColor(v){
+  if(v>=75) return '#5FBE83';
+  if(v>=55) return '#8FBE5F';
+  if(v>=35) return '#D6BB4C';
+  if(v>=18) return '#CE8A3E';
+  return '#C15B4A';
+}
+
+// ================= EXERCISE BANK =================
+const EXERCISE_BANK = [
+  {id:'sleeper_stretch', name:"Sleeper Stretch", cats:['shoulder_internal'], sides:true, dur:40,
+   cue:"Lying on your side, bottom arm bent 90° in front of you. Use your top hand to gently press the forearm toward the floor.",
+   why:"The most direct stretch for internal rotation — go gently, especially on your left side which tested tighter."},
+  {id:'towel_behind_back', name:"Behind-the-Back Towel Reach", cats:['shoulder_internal'], sides:true, dur:40,
+   cue:"Hold a towel behind your back, one hand reaching over the shoulder and one from below. Walk your hands toward each other.",
+   why:"Directly rehearses the internal-rotation reach used in your test."},
+  {id:'wall_internal_rotation', name:"Arm-Behind-Back Wall Stretch", cats:['shoulder_internal'], sides:true, dur:30,
+   cue:"Stand side-on to a wall, back of your hand against the wall at waist height, gently turn your body away.",
+   why:"Loads internal rotation with more leverage than the towel stretch."},
+  {id:'cross_body_stretch', name:"Cross-Body Shoulder Stretch", cats:['shoulder_internal','shoulder_external'], sides:true, dur:25,
+   cue:"Bring one arm straight across your chest and gently pull it closer with the other arm.",
+   why:"Loosens the back of the shoulder, which limits both rotation directions."},
+  {id:'doorway_pec', name:"Doorway Pec Stretch", cats:['shoulder_external'], sides:true, dur:35,
+   cue:"Forearm on a doorframe at shoulder height, gently rotate your chest away from your arm.",
+   why:"A tight chest limits how far your shoulder can externally rotate."},
+  {id:'ext_rotation_reach', name:"Behind-the-Head Reach", cats:['shoulder_external'], sides:true, dur:30,
+   cue:"Reach one arm overhead and behind your head, aiming to touch between your shoulder blades.",
+   why:"This is your test movement itself — practising it directly improves it."},
+  {id:'wall_slides', name:"Wall Slides", cats:['shoulder_external','overhead_flexion'], sides:false, dur:45,
+   cue:"Back against a wall, arms in a goalpost position, slide them overhead keeping contact with the wall.",
+   why:"Builds active overhead control through both rotation and flexion."},
+  {id:'wall_angel', name:"Wall Angel Reach", cats:['overhead_flexion'], sides:false, dur:45,
+   cue:"Back against a wall, arms overhead, try to flatten your lower back and arms against the wall as you slide up and down.",
+   why:"Builds straight-overhead reach while checking your lower back doesn't arch to compensate."},
+  {id:'lat_stretch', name:"Lat Stretch on Doorframe", cats:['overhead_flexion'], sides:true, dur:35,
+   cue:"Hold a doorframe above head height, sink your hips back and down to feel a stretch down the side of your torso.",
+   why:"Tight lats are a common reason arms can't get fully overhead."},
+  {id:'overhead_reach_squat', name:"Overhead Reach in Squat", cats:['overhead_flexion','overhead_squat'], sides:false, dur:40,
+   cue:"From the bottom of a squat, reach both arms overhead while keeping your chest tall.",
+   why:"Layers the shoulder piece on top of the squat, building toward the full pattern."},
+  {id:'deep_squat_hold', name:"Deep Squat Hold", cats:['overhead_squat','hip_external'], sides:false, dur:55,
+   cue:"Hold a doorframe or post for balance if you need it. Sink your hips as low as is comfortable, heels flat.",
+   why:"Rehearses the squat pattern you scored 0% on — it needs ankle, hip and thoracic range working together."},
+  {id:'goblet_squat_hold', name:"Goblet Squat Hold", cats:['overhead_squat'], sides:false, dur:45,
+   cue:"Feet shoulder-width, hands together at your chest, sink into a squat keeping your chest tall and heels down.",
+   why:"An easier entry point into full squat depth before adding the overhead reach."},
+  {id:'overhead_squat_full', name:"Overhead Squat Hold", cats:['overhead_squat','overhead_flexion'], sides:false, dur:45,
+   cue:"Arms overhead, squat as low as feels controlled with heels flat, and hold at the bottom.",
+   why:"Direct rehearsal of the full pattern you're building toward."},
+  {id:'open_book', name:"Open Book Rotation", cats:['thorax_rotation'], sides:true, dur:40,
+   cue:"Lying on your side, knees stacked and bent, arms out in front. Rotate your top arm across your body to open toward the ceiling, following it with your eyes.",
+   why:"Keeps your already-solid thoracic rotation sharp."},
+  {id:'seated_rotation', name:"Seated Cross-Legged Rotation", cats:['thorax_rotation'], sides:true, dur:30,
+   cue:"Sit cross-legged, cross your arms over your chest, and rotate your torso as far as you can each way.",
+   why:"The exact motion used in your test — a good way to track direct improvement."},
+  {id:'thread_needle', name:"Thread the Needle", cats:['thorax_rotation','shoulder_internal'], sides:true, dur:35,
+   cue:"On hands and knees, thread one arm under your body and through, resting your shoulder and head down, then unwind and reach that arm to the ceiling.",
+   why:"Combines thoracic rotation with a bit of shoulder mobility."},
+  {id:'standing_rotation_reach', name:"Standing Trunk Rotation", cats:['thorax_rotation'], sides:true, dur:30,
+   cue:"Feet planted, arms out wide, rotate your torso side to side with control, letting your eyes lead.",
+   why:"An active version of rotation to finish, moving through the range you just opened."},
+  {id:'ninety_ninety', name:"90/90 Hip Switches", cats:['hip_external'], sides:false, dur:90,
+   cue:"Sit with your front leg bent 90° in front of you and your back leg bent 90° out to the side. Lift both knees and rotate through to switch sides without using your hands.",
+   why:"Trains hip internal and external rotation directly — the area that tested lowest on your assessment."},
+  {id:'pigeon', name:"Pigeon Pose", cats:['hip_external'], sides:true, dur:55,
+   cue:"Front shin angled across the mat, back leg extended straight behind you. Fold forward over the front leg as far as feels good.",
+   why:"One of the deepest hip-external-rotation and glute stretches available."},
+  {id:'butterfly', name:"Seated Butterfly", cats:['hip_external','hip_abduction'], sides:false, dur:70,
+   cue:"Soles of your feet together, knees out to the sides, hinge forward slightly from the hips.",
+   why:"A classic combined external-rotation and adductor stretch."},
+  {id:'frog_stretch', name:"Frog Stretch", cats:['hip_external','hip_abduction'], sides:false, dur:60,
+   cue:"Knees wide on the floor, ankles in line with your knees, rock your hips back and forth slowly.",
+   why:"A deeper adductor and hip-rotation stretch from a different angle than the butterfly."},
+  {id:'supine_figure4', name:"Supine Figure-4", cats:['hip_external','hip_flexion'], sides:true, dur:40,
+   cue:"Lying on your back, cross one ankle over the opposite knee. Pull the uncrossed thigh toward your chest until you feel the glute.",
+   why:"Tight glutes limit both external rotation and how far the hip flexes."},
+  {id:'figure4_balance', name:"Standing Figure-4 Balance", cats:['hip_external'], sides:true, dur:25,
+   cue:"Stand on one leg, cross the other ankle over the knee, and gently sit back as if into a chair.",
+   why:"Trains the range under a bit of load-bearing control, closer to how you'll actually use it."},
+  {id:'knee_to_chest_standing', name:"Standing Knee-to-Chest Pull", cats:['hip_flexion'], sides:true, dur:30,
+   cue:"Standing tall, pull one knee toward your chest, holding just below the knee.",
+   why:"A quick maintenance stretch to keep the hip flexion range you've already built."},
+  {id:'double_knee_chest', name:"Supine Double Knee-to-Chest", cats:['hip_flexion'], sides:false, dur:40,
+   cue:"Lying on your back, pull both knees to your chest and hold, rocking gently side to side.",
+   why:"Opens hip flexion range and releases the lower back at the same time."},
+  {id:'adductor_rock', name:"Standing Adductor Rock", cats:['hip_abduction'], sides:true, dur:40,
+   cue:"Take a wide stance, shift your weight into one bent knee while keeping the other leg straight, and rock side to side.",
+   why:"Targets hip abduction range — one of your lower scores."},
+  {id:'side_leg_raises', name:"Side-Lying Leg Raises", cats:['hip_abduction'], sides:true, dur:30,
+   cue:"Lying on your side, lift your top leg up and down slowly through its full range, staying controlled.",
+   why:"Trains abduction actively, not just passively stretching into it."},
+  {id:'cossack_rock', name:"Cossack Squat Rock", cats:['hip_abduction','hip_external'], sides:true, dur:35,
+   cue:"Wide stance, sink into one bent knee while the other leg stays straight with the foot flat, then rock across to the other side.",
+   why:"A dynamic take on the abduction range you're building."},
+  {id:'wide_straddle_fold', name:"Standing Wide Straddle Fold", cats:['hip_abduction','postchain'], sides:false, dur:45,
+   cue:"Feet wide, hinge forward from the hips, hands to the floor or a block, gently sway.",
+   why:"Loads a wide-stance stretch through the inner thigh, adductors and hamstrings together."},
+  {id:'hamstring_strap', name:"Hamstring Stretch (strap or towel)", cats:['postchain'], sides:true, dur:55,
+   cue:"Lying on your back, loop a towel or band around one foot. Keep the leg straight and the knee soft, gently pull it toward you.",
+   why:"Your most direct stretch for the tightest area on your mobility test."},
+  {id:'seated_fold', name:"Seated Forward Fold", cats:['postchain'], sides:false, dur:80,
+   cue:"Sit tall, hinge from the hips, and reach toward your shins or feet. Keep a slight bend in the knees if your lower back rounds.",
+   why:"Loads the whole posterior chain — hamstrings, calves and lower back together."},
+  {id:'wgs', name:"World's Greatest Stretch", cats:['postchain','thorax_rotation'], sides:true, dur:40,
+   cue:"Step into a deep lunge, back knee down. Rotate your torso toward the front leg and reach that arm to the sky. Then straighten the front leg and hinge over it to feel the hamstring.",
+   why:"Opens hip flexor, hamstring and thoracic rotation in one flow — efficient when several areas need work."},
+  {id:'single_leg_rdl', name:"Single-Leg RDL Reach", cats:['postchain'], sides:true, dur:35,
+   cue:"Balance on one leg, hinge forward reaching your hands toward the floor as the other leg lifts behind you. Move slowly, no weight needed.",
+   why:"Moves the hamstring through a lengthened range dynamically, while challenging hip stability."},
+  {id:'roll_down', name:"Standing Roll-Down", cats:['postchain'], sides:false, dur:45,
+   cue:"Standing, slowly roll down through your spine one vertebra at a time, let your arms hang, and gently sway.",
+   why:"A relaxed way to decompress the lower back and ease into the hamstrings."},
+  {id:'childs_pose', name:"Child's Pose Reach", cats:['postchain'], sides:false, dur:60,
+   cue:"Kneel, sit your hips back to your heels, walk your hands forward and rest your chest toward the floor.",
+   why:"A gentle finisher for the lower back and a calm way to close a session."},
+  {id:'fold_to_split', name:"Forward Fold to Half-Split", cats:['postchain'], sides:true, dur:40,
+   cue:"From standing, step one foot back into a low lunge, then shift weight back and straighten the front leg to fold over it.",
+   why:"Moves between hip flexor and hamstring length under light, dynamic control."},
+  {id:'standing_hamstring_wall', name:"Standing Hamstring Wall Stretch", cats:['postchain'], sides:true, dur:40,
+   cue:"Prop one heel up on a low surface, leg straight, hinge forward from the hips keeping your back flat.",
+   why:"An easy-anywhere variation that loads the hamstring directly."},
+  {id:'ankle_alphabet', name:"Ankle Alphabet", cats:['ankle_flexion'], sides:true, dur:35,
+   cue:"Seated or lying with your foot off the floor, slowly trace each letter of the alphabet with your big toe.",
+   why:"A gentle, pain-free way to move the ankle through every direction — ideal while it's still settling after the sprain."},
+  {id:'knee_to_wall', name:"Knee-to-Wall Ankle Stretch", cats:['ankle_flexion'], sides:true, dur:40,
+   cue:"Stand facing a wall, front foot a few centimetres away. Drive the knee forward over the toes without lifting the heel. Only go as far as feels easy.",
+   why:"Builds the ankle bend you need to squat with good depth. Stop well short of anything sharp."},
+  {id:'calf_stretch_wall', name:"Wall Calf Stretch (gentle)", cats:['ankle_flexion'], sides:true, dur:35,
+   cue:"Hands on a wall, one leg back with the heel down, lean forward gently. Keep this light given your ankle history.",
+   why:"Calf tightness limits ankle bend, but this stays gentle to respect the healing joint."},
+  {id:'seated_ankle_rock', name:"Seated Ankle Rocks", cats:['ankle_flexion'], sides:true, dur:30,
+   cue:"Seated, foot flat on the floor, gently rock your knee forward and back over your toes without lifting the heel.",
+   why:"A very gentle, seated way to build ankle bend — good on days the ankle feels sensitive."},
+  {id:'down_dog_pedal', name:"Downward Dog Pedal", cats:['ankle_flexion','postchain'], sides:false, dur:40,
+   cue:"From downward dog, gently pedal your feet, bending one knee at a time to stretch the opposite calf.",
+   why:"Combines a light calf stretch with the rest of the posterior chain — go gently on the ankle side."}
+];
+function exerciseFromId(id){ return EXERCISE_BANK.find(e=>e.id===id); }
+
+// ================= STATE =================
+let selectedDay = null;
+let meta = {testFreqDays:30, streak:0, lastSessionDate:null, planCycle:0};
+let sessions = [];
+let tests = [];
+let planState = null;
+let focusSteps = [];
+let focusIndex = 0;
+let focusRemaining = 0;
+let focusTimerHandle = null;
+let focusRunning = false;
+let focusHasStarted = false;
+let sessionDayKey = null;
+
+// ================= STORAGE (localStorage — works standalone, no claude.ai needed) =================
+const STORE_PREFIX = 'resetMobility_';
+async function loadAll(){
+  try{ const m = localStorage.getItem(STORE_PREFIX+'meta'); if(m) meta = Object.assign(meta, JSON.parse(m)); }catch(e){}
+  try{ const s = localStorage.getItem(STORE_PREFIX+'sessions'); if(s) sessions = JSON.parse(s); }catch(e){}
+  try{ const t = localStorage.getItem(STORE_PREFIX+'tests'); if(t) tests = JSON.parse(t); }catch(e){}
+}
+async function loadPlan(){
+  try{ const p = localStorage.getItem(STORE_PREFIX+'plan'); if(p) planState = JSON.parse(p); }catch(e){}
+}
+async function saveMeta(){ try{ localStorage.setItem(STORE_PREFIX+'meta', JSON.stringify(meta)); }catch(e){} }
+async function saveSessions(){ try{ localStorage.setItem(STORE_PREFIX+'sessions', JSON.stringify(sessions)); }catch(e){} }
+async function saveTests(){ try{ localStorage.setItem(STORE_PREFIX+'tests', JSON.stringify(tests)); }catch(e){} }
+async function savePlan(){ try{ localStorage.setItem(STORE_PREFIX+'plan', JSON.stringify(planState)); }catch(e){} }
+
+// ================= ADAPTIVE PLANNING =================
+function latestTest(){ return tests.length ? tests[0] : null; }
+function globalScore(t){
+  if(!t) return 0;
+  const vals = SUBCATS.map(c=>t.scores[c.key]||0);
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+}
+function medianOf(arr){
+  const s=[...arr].sort((a,b)=>a-b); const n=s.length;
+  return n%2 ? s[(n-1)/2] : (s[n/2-1]+s[n/2])/2;
+}
+function computeWeights(){
+  const t = latestTest();
+  const prev = tests.length>1 ? tests[1] : null;
+  const weights = {};
+  SUBCATS.forEach(sc=>{
+    const score = t ? (t.scores[sc.key] ?? 50) : 50;
+    let base = Math.max(5, 100-score);
+    let mult = 1.0;
+    if(prev){
+      const prevScore = prev.scores[sc.key] ?? score;
+      const delta = score - prevScore;
+      if(delta>=15) mult=0.8;
+      else if(delta<=0) mult=1.25;
+    }
+    weights[sc.key] = base*mult;
+  });
+  return weights;
+}
+function apportion(weights, totalSlots){
+  const keys = Object.keys(weights);
+  const sum = keys.reduce((a,k)=>a+weights[k],0);
+  const base={}, quotas={};
+  let used=0;
+  keys.forEach(k=>{
+    const q = weights[k]/sum*totalSlots;
+    base[k]=Math.floor(q);
+    quotas[k]=q-base[k];
+    used+=base[k];
+  });
+  let remaining = totalSlots-used;
+  const order = keys.slice().sort((a,b)=>quotas[b]-quotas[a]);
+  let i=0;
+  while(remaining>0){
+    base[order[i%order.length]] += 1;
+    remaining--; i++;
+  }
+  return base;
+}
+function buildPool(counts){
+  const keys = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const pool=[];
+  const remaining = {...counts};
+  let anyLeft=true;
+  while(anyLeft){
+    anyLeft=false;
+    for(const k of keys){
+      if(remaining[k]>0){ pool.push(k); remaining[k]--; anyLeft=true; }
+    }
+  }
+  return pool;
+}
+function buildDayPairs(pool){
+  const p = [...pool];
+  const days=[];
+  for(let i=0;i<7;i++){
+    let primary = p[i*2];
+    let secondary = p[i*2+1];
+    if(primary===secondary){
+      const swapIdx = (i+1)*2+1;
+      if(swapIdx < p.length && p[swapIdx]!==primary){
+        const tmp = p[i*2+1]; p[i*2+1] = p[swapIdx]; p[swapIdx] = tmp;
+        secondary = p[i*2+1];
+      }
+    }
+    days.push({primary, secondary});
+  }
+  return days;
+}
+function pickExercisesForDay(catKey, count, seed, excludeIds){
+  const pool = EXERCISE_BANK.filter(e=> e.cats.includes(catKey) && !excludeIds.has(e.id));
+  if(!pool.length) return [];
+  const offset = (meta.planCycle||0)*3 + seed;
+  const picks=[];
+  for(let i=0;i<count && i<pool.length;i++){
+    picks.push(pool[(offset+i)%pool.length]);
+  }
+  return picks;
+}
+async function generatePlan(){
+  const weights = computeWeights();
+  const counts = apportion(weights, 14);
+  const pool = buildPool(counts);
+  const pairs = buildDayPairs(pool);
+  const median = medianOf(Object.values(weights));
+  const days = pairs.map((pair, idx)=>{
+    const dayIndex = idx+1;
+    const primaryPicks = pickExercisesForDay(pair.primary, 3, dayIndex, new Set());
+    const usedIds = new Set(primaryPicks.map(e=>e.id));
+    const secondaryPicks = pickExercisesForDay(pair.secondary, 2, dayIndex+10, usedIds);
+    const exerciseIds = primaryPicks.concat(secondaryPicks).map(e=>e.id);
+    const g1 = subcatByKey(pair.primary).group, g2 = subcatByKey(pair.secondary).group;
+    const title = g1===g2 ? `${GROUPS[g1].label} Focus` : `${GROUPS[g1].label} & ${GROUPS[g2].label}`;
+    const subtitle = `${subcatByKey(pair.primary).label} priority · ${subcatByKey(pair.secondary).label} support`;
+    const priority = weights[pair.primary] >= median;
+    return {day:dayIndex, primary:pair.primary, secondary:pair.secondary, title, subtitle, priority, exerciseIds};
+  });
+  meta.planCycle = (meta.planCycle||0)+1;
+  planState = {sourceDate: latestTest() ? latestTest().date : todayISO(), generatedAt: todayISO(), days};
+  await savePlan();
+  await saveMeta();
+}
+async function reshuffleExercises(){
+  if(!planState){ await generatePlan(); return; }
+  meta.planCycle = (meta.planCycle||0)+1;
+  planState.days = planState.days.map((d,idx)=>{
+    const dayIndex = idx+1;
+    const primaryPicks = pickExercisesForDay(d.primary, 3, dayIndex, new Set());
+    const usedIds = new Set(primaryPicks.map(e=>e.id));
+    const secondaryPicks = pickExercisesForDay(d.secondary, 2, dayIndex+10, usedIds);
+    return {...d, exerciseIds: primaryPicks.concat(secondaryPicks).map(e=>e.id)};
+  });
+  planState.generatedAt = todayISO();
+  await savePlan();
+  await saveMeta();
+}
+
+// ================= INIT =================
+function defaultDayForToday(){
+  const wd = new Date().getDay();
+  const map = {1:1,2:2,3:3,4:4,5:5,6:6,0:7};
+  return map[wd];
+}
+function fmtDate(d){ return new Date(d).toLocaleDateString(undefined, {month:'short', day:'numeric'}); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+async function init(){
+  await loadAll();
+  await loadPlan();
+  if(!tests.length){
+    tests.unshift({date:'2026-05-30', scores:{
+      shoulder_internal:50, shoulder_external:77, overhead_flexion:77, overhead_squat:0,
+      thorax_rotation:63, hip_external:0, hip_flexion:83, hip_abduction:29, postchain:6, ankle_flexion:50
+    }});
+    await saveTests();
+  }
+  if(!planState || planState.sourceDate !== latestTest().date){
+    await generatePlan();
+  }
+  selectedDay = defaultDayForToday();
+  renderToday();
+  renderWeek();
+  renderScore();
+  renderLog();
+  document.querySelectorAll('.freq-btn').forEach(b=>{
+    if(parseInt(b.dataset.freq)===meta.testFreqDays) b.classList.add('active');
+  });
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view==='score') renderScore();
+    if(btn.dataset.view==='log') renderLog();
+  });
+});
+
+// ================= TODAY =================
+function totalSeconds(dayNum){
+  const d = planState.days[dayNum-1];
+  return d.exerciseIds.reduce((sum,id)=>{
+    const ex = exerciseFromId(id);
+    return sum + (ex.sides ? ex.dur*2 : ex.dur);
+  },0);
+}
+
+function renderToday(){
+  const d = planState.days[selectedDay-1];
+  document.getElementById('today-eyebrow').textContent = `Day ${selectedDay} · ${d.title}`;
+  document.getElementById('today-title').textContent = d.title;
+  const mins = Math.round(totalSeconds(selectedDay)/60);
+  document.getElementById('today-meta').textContent = `${mins} min · ${d.exerciseIds.length} moves · ${d.subtitle}`;
+  document.getElementById('today-daynum-inline').textContent = selectedDay;
+
+  const noteSlot = document.getElementById('today-note-slot');
+  noteSlot.innerHTML = '';
+  const hasAnkle = d.exerciseIds.some(id=>exerciseFromId(id).cats.includes('ankle_flexion'));
+  if(hasAnkle){
+    noteSlot.innerHTML = `<div class="note caution">Includes ankle work — everything here should feel like an easy stretch. If anything feels sharp or off given your ankle history, ease off or skip it.</div>`;
+  } else if(d.priority){
+    noteSlot.innerHTML = `<div class="note">Priority day — this targets an area that tested low or hasn't moved much yet, so it shows up more often this week.</div>`;
+  }
+
+  const list = document.getElementById('today-exercise-list');
+  list.innerHTML = '';
+  d.exerciseIds.forEach((id, i)=>{
+    const ex = exerciseFromId(id);
+    const group = GROUPS[subcatByKey(ex.cats[0]).group];
+    const durLabel = ex.sides ? `${ex.dur}s / side` : `${ex.dur}s`;
+    const card = document.createElement('div');
+    card.className = 'ex-card';
+    card.innerHTML = `
+      <div class="ex-head">
+        <div class="ex-name">${ex.name}</div>
+        <div class="ex-dur">${durLabel}</div>
+      </div>
+      <div class="ex-tags">
+        <span class="badge badge-tag"><span class="dot" style="background:${group.color}"></span>${group.label}</span>
+      </div>
+      <div class="ex-toggle" data-idx="${i}">How to do it ▾</div>
+      <div class="ex-detail" id="detail-${i}">
+        <div class="label">Cue</div>
+        <p>${ex.cue}</p>
+        <div class="label">Why</div>
+        <p class="why">${ex.why}</p>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+  list.querySelectorAll('.ex-toggle').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      const detail = document.getElementById('detail-'+t.dataset.idx);
+      detail.classList.toggle('open');
+      t.textContent = detail.classList.contains('open') ? 'Hide ▴' : 'How to do it ▾';
+    });
+  });
+}
+document.getElementById('change-day-link').addEventListener('click', (e)=>{
+  e.preventDefault();
+  document.querySelector('.tab-btn[data-view="week"]').click();
+});
+
+// ================= WEEK =================
+function renderWeek(){
+  const list = document.getElementById('week-list');
+  list.innerHTML = '';
+  const today = defaultDayForToday();
+  for(let i=1;i<=7;i++){
+    const d = planState.days[i-1];
+    const mins = Math.round(totalSeconds(i)/60);
+    const card = document.createElement('div');
+    card.className = 'day-card' + (i===today ? ' today':'');
+    card.innerHTML = `
+      <div class="day-num">${i}</div>
+      <div class="day-info">
+        <div class="day-name">${d.title}</div>
+        <div class="day-meta">${d.subtitle} · ${mins} min</div>
+      </div>
+      <span class="badge ${d.priority?'badge-priority':'badge-maint'}">${d.priority?'Priority':'Maintain'}</span>
+    `;
+    card.addEventListener('click', ()=>{
+      selectedDay = i;
+      renderToday();
+      document.querySelector('.tab-btn[data-view="today"]').click();
+    });
+    list.appendChild(card);
+  }
+}
+document.getElementById('shuffle-btn').addEventListener('click', async ()=>{
+  await reshuffleExercises();
+  renderWeek();
+  renderToday();
+});
+
+// ================= AUDIO CHIME =================
+let audioCtx = null;
+function ensureAudio(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+  }catch(e){}
+}
+function playTone(freq, startTime, duration){
+  if(!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type='sine';
+  osc.frequency.value=freq;
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.3, startTime+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startTime+duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(startTime); osc.stop(startTime+duration+0.03);
+}
+function playChime(){
+  ensureAudio();
+  if(!audioCtx) return;
+  const now = audioCtx.currentTime;
+  playTone(880, now, 0.15);
+  playTone(1174.66, now+0.16, 0.22);
+}
+
+// ================= FOCUS SESSION =================
+function buildSteps(dayNum){
+  const d = planState.days[dayNum-1];
+  const steps = [];
+  d.exerciseIds.forEach(id=>{
+    const ex = exerciseFromId(id);
+    if(ex.sides){
+      steps.push({...ex, side:'Left'});
+      steps.push({...ex, side:'Right'});
+    } else {
+      steps.push({...ex, side:null});
+    }
+  });
+  return steps;
+}
+document.getElementById('start-session-btn').addEventListener('click', ()=>{
+  focusSteps = buildSteps(selectedDay);
+  focusIndex = 0;
+  sessionDayKey = selectedDay;
+  openFocusStep();
+  document.getElementById('focus-overlay').classList.add('active');
+});
+function renderFocusProgress(){
+  const wrap = document.getElementById('focus-progress');
+  wrap.innerHTML = '';
+  focusSteps.forEach((s,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'seg' + (i<focusIndex?' done':(i===focusIndex?' current':''));
+    wrap.appendChild(seg);
+  });
+}
+function openFocusStep(){
+  clearInterval(focusTimerHandle);
+  focusRunning = false;
+  focusHasStarted = false;
+  renderFocusProgress();
+  if(focusIndex >= focusSteps.length){ showFocusComplete(); return; }
+  const step = focusSteps[focusIndex];
+  const group = GROUPS[subcatByKey(step.cats[0]).group];
+  focusRemaining = step.dur;
+  const body = document.getElementById('focus-body');
+  body.innerHTML = `
+    <div class="focus-eyebrow">${group.label}${step.side? ' · '+step.side+' side':''}</div>
+    <div class="focus-name">${step.name}</div>
+    <div class="focus-side">${focusIndex+1} of ${focusSteps.length}</div>
+    <div class="focus-timer">
+      <svg width="220" height="220" viewBox="0 0 220 220">
+        <circle cx="110" cy="110" r="100" fill="none" stroke="#1C3226" stroke-width="6"/>
+        <circle id="focus-ring" cx="110" cy="110" r="100" fill="none" stroke="#E4C169" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="0"/>
+      </svg>
+      <div class="focus-timer-num" id="focus-num">${focusRemaining}</div>
+    </div>
+    <div class="focus-hint" id="focus-hint">Tap start when you're ready</div>
+    <div class="focus-cue">${step.cue}</div>
+  `;
+  document.getElementById('focus-controls').style.display = 'flex';
+  document.getElementById('focus-prev-btn').style.visibility = focusIndex===0 ? 'hidden' : 'visible';
+  updateFocusRing(step.dur);
+  updatePlayPauseLabel();
+}
+function updateFocusRing(totalDur){
+  const ring = document.getElementById('focus-ring');
+  if(!ring) return;
+  const circumference = 628;
+  const frac = focusRemaining/totalDur;
+  ring.setAttribute('stroke-dashoffset', String(circumference*(1-frac)));
+  const num = document.getElementById('focus-num');
+  if(num) num.textContent = focusRemaining;
+}
+function updatePlayPauseLabel(){
+  const btn = document.getElementById('focus-playpause-btn');
+  if(!btn) return;
+  btn.textContent = focusRunning ? 'Pause' : (focusHasStarted ? 'Resume' : 'Start');
+  const hint = document.getElementById('focus-hint');
+  if(hint) hint.style.display = focusRunning ? 'none' : 'block';
+}
+function tickFocus(){
+  focusRemaining -= 1;
+  const step = focusSteps[focusIndex];
+  updateFocusRing(step.dur);
+  if(focusRemaining <= 0){
+    clearInterval(focusTimerHandle);
+    focusRunning = false;
+    playChime();
+    focusIndex += 1;
+    openFocusStep();
+  }
+}
+document.getElementById('focus-playpause-btn').addEventListener('click', ()=>{
+  if(focusRunning){
+    clearInterval(focusTimerHandle);
+    focusRunning = false;
+  } else {
+    ensureAudio();
+    focusRunning = true;
+    focusHasStarted = true;
+    focusTimerHandle = setInterval(tickFocus, 1000);
+  }
+  updatePlayPauseLabel();
+});
+document.getElementById('focus-next-btn').addEventListener('click', ()=>{
+  clearInterval(focusTimerHandle);
+  focusIndex += 1;
+  openFocusStep();
+});
+document.getElementById('focus-prev-btn').addEventListener('click', ()=>{
+  if(focusIndex===0) return;
+  clearInterval(focusTimerHandle);
+  focusIndex -= 1;
+  openFocusStep();
+});
+document.getElementById('focus-close-btn').addEventListener('click', ()=>{
+  clearInterval(focusTimerHandle);
+  document.getElementById('focus-overlay').classList.remove('active');
+});
+function showFocusComplete(){
+  document.getElementById('focus-controls').style.display = 'none';
+  const body = document.getElementById('focus-body');
+  const mins = Math.round(totalSeconds(sessionDayKey)/60);
+  const d = planState.days[sessionDayKey-1];
+  body.innerHTML = `
+    <div class="complete-card">
+      <div class="complete-check">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5FBE83" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h2 style="font-size:22px; margin-bottom:8px;">Session complete</h2>
+      <p style="color:var(--text-faint); font-size:13.5px; margin-bottom:26px;">Day ${sessionDayKey} · ${d.title} · ~${mins} min</p>
+      <button class="btn btn-primary" id="focus-finish-btn">Done</button>
+    </div>
+  `;
+  document.getElementById('focus-finish-btn').addEventListener('click', async ()=>{
+    await logSession(sessionDayKey, mins);
+    document.getElementById('focus-overlay').classList.remove('active');
+    renderLog();
+  });
+}
+async function logSession(day, mins){
+  const today = todayISO();
+  const d = planState.days[day-1];
+  sessions.unshift({date: today, day: day, dayName: d.title, minutes: mins});
+  const dates = new Set(sessions.map(s=>s.date));
+  let streak = 0;
+  let cursor = new Date();
+  while(true){
+    const iso = cursor.toISOString().slice(0,10);
+    if(dates.has(iso)){ streak += 1; cursor.setDate(cursor.getDate()-1); }
+    else break;
+  }
+  meta.streak = streak;
+  meta.lastSessionDate = today;
+  await saveSessions();
+  await saveMeta();
+}
+
+// ================= SCORE VIEW =================
+function renderRing(pct){
+  const svg = document.getElementById('ring-svg');
+  const r=82, cx=100, cy=100;
+  const circumference = 2*Math.PI*r;
+  const offset = circumference*(1-pct/100);
+  svg.innerHTML = `
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1C3226" stroke-width="12"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${scoreColor(pct)}" stroke-width="12"
+      stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+      transform="rotate(-90 ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy+2}" text-anchor="middle" class="ring-label">${pct}</text>
+    <text x="${cx}" y="${cy+24}" text-anchor="middle" class="ring-pct">%</text>
+  `;
+}
+function renderScore(){
+  const t = latestTest();
+  const pct = globalScore(t);
+  renderRing(pct);
+  document.getElementById('ring-caption').textContent = `Mobility score as of ${fmtDate(t.date)}`;
+  document.getElementById('last-test-date').textContent = fmtDate(t.date);
+
+  const weights = computeWeights();
+  const top3 = Object.keys(weights).sort((a,b)=>weights[b]-weights[a]).slice(0,3);
+  const chips = document.getElementById('focus-chips');
+  chips.innerHTML = top3.map(k=>`<span class="chip">${subcatByKey(k).label}</span>`).join('');
+
+  const bars = document.getElementById('score-bars');
+  bars.innerHTML = '';
+  let lastGroup = null;
+  SUBCATS.forEach(c=>{
+    if(c.group !== lastGroup){
+      const h = document.createElement('div');
+      h.className = 'group-header';
+      h.textContent = GROUPS[c.group].label;
+      bars.appendChild(h);
+      lastGroup = c.group;
+    }
+    const v = t.scores[c.key]||0;
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <div class="score-row-top"><span class="name">${c.label}</span><span class="val" style="color:${scoreColor(v)}">${v}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v}%; background:${scoreColor(v)}"></div></div>
+    `;
+    bars.appendChild(row);
+  });
+
+  const last = new Date(t.date);
+  const due = new Date(last); due.setDate(due.getDate()+meta.testFreqDays);
+  const daysLeft = Math.ceil((due - new Date())/86400000);
+  document.getElementById('next-test-line').textContent = daysLeft > 0
+    ? `Next test in ${daysLeft} day${daysLeft===1?'':'s'} (${fmtDate(due)})`
+    : `Your next test is due — log it whenever you're ready.`;
+
+  const histCard = document.getElementById('test-history-card');
+  const histList = document.getElementById('test-history-list');
+  histList.innerHTML = '';
+  if(tests.length>1){
+    histCard.style.display = 'block';
+    tests.forEach(tt=>{
+      const g = globalScore(tt);
+      const item = document.createElement('div');
+      item.className = 'test-item';
+      item.innerHTML = `<div class="tdate">${fmtDate(tt.date)}</div><div class="tglobal">${g}%</div>`;
+      histList.appendChild(item);
+    });
+  } else {
+    histCard.style.display = 'none';
+  }
+}
+document.querySelectorAll('.freq-btn').forEach(b=>{
+  b.addEventListener('click', async ()=>{
+    document.querySelectorAll('.freq-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    meta.testFreqDays = parseInt(b.dataset.freq);
+    await saveMeta();
+    renderScore();
+  });
+});
+
+// ================= TEST MODAL =================
+let pendingScores = {};
+document.getElementById('open-test-btn').addEventListener('click', ()=>{
+  pendingScores = {};
+  const last = latestTest();
+  const form = document.getElementById('test-form');
+  form.innerHTML = '';
+  SUBCATS.forEach(c=>{
+    const startVal = last ? (last.scores[c.key]??50) : 50;
+    pendingScores[c.key] = startVal;
+    const row = document.createElement('div');
+    row.className = 'slider-row';
+    row.innerHTML = `
+      <label>${c.label}</label>
+      <div class="test-instr">${c.test}</div>
+      <input type="range" min="0" max="100" value="${startVal}" data-key="${c.key}">
+      <div class="slider-val" id="val-${c.key}">${startVal}%</div>
+    `;
+    form.appendChild(row);
+  });
+  form.querySelectorAll('input[type=range]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      pendingScores[inp.dataset.key] = parseInt(inp.value);
+      document.getElementById('val-'+inp.dataset.key).textContent = inp.value+'%';
+    });
+  });
+  document.getElementById('test-overlay').classList.add('active');
+});
+document.getElementById('test-close-btn').addEventListener('click', ()=>{
+  document.getElementById('test-overlay').classList.remove('active');
+});
+document.getElementById('test-save-btn').addEventListener('click', async ()=>{
+  tests.unshift({date: todayISO(), scores: {...pendingScores}});
+  await saveTests();
+  await generatePlan();
+  document.getElementById('test-overlay').classList.remove('active');
+  renderScore();
+  renderToday();
+  renderWeek();
+});
+
+// ================= LOG VIEW =================
+function renderLog(){
+  document.getElementById('streak-current').textContent = meta.streak || 0;
+  document.getElementById('streak-total').textContent = sessions.length;
+  document.getElementById('streak-minutes').textContent = sessions.reduce((a,s)=>a+(s.minutes||0),0);
+  const list = document.getElementById('log-list');
+  list.innerHTML = '';
+  if(!sessions.length){
+    list.innerHTML = `<div class="empty">No sessions logged yet. Finish today's routine to start your streak.</div>`;
+    return;
+  }
+  sessions.forEach((s, idx)=>{
+    const item = document.createElement('div');
+    item.className = 'log-item';
+    item.innerHTML = `
+      <div>
+        <div class="ldate">${fmtDate(s.date)}</div>
+        <div class="lmeta">Day ${s.day} · ${s.dayName} · ${s.minutes} min</div>
+      </div>
+      <button class="log-del" data-idx="${idx}">✕</button>
+    `;
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.log-del').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      sessions.splice(parseInt(btn.dataset.idx),1);
+      await saveSessions();
+      renderLog();
+    });
+  });
+}
+
+init();
+</script>
+</body>
+</html>
