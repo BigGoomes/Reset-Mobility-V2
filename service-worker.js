@@ -1,62 +1,82 @@
-// Service Worker for Reset Mobility — enables offline support and app-like caching
 const CACHE_NAME = 'reset-mobility-v1';
-const urlsToCache = [
-  '/Reset-Mobility-V2/',
-  '/Reset-Mobility-V2/index.html',
-  '/Reset-Mobility-V2/manifest.json'
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  'https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap'
 ];
 
-// Install: cache core files
-self.addEventListener('install', (event) => {
+// Install event - cache essential assets
+self.addEventListener('install', event => {
+  console.log('[Service Worker] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache).catch(() => {
-        // Graceful fail if network is down during install
-      });
-    })
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[Service Worker] Caching assets');
+      return Promise.all(
+        ASSETS_TO_CACHE.map(asset => {
+          return cache.add(asset).catch(err => {
+            console.log('[Service Worker] Failed to cache:', asset, err);
+          });
+        })
+      );
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Activate: clean up old caches
-self.addEventListener('activate', (event) => {
+// Activate event - clean up old caches
+self.addEventListener('activate', event => {
+  console.log('[Service Worker] Activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
+        cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
+            console.log('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch: network first, fall back to cache
-self.addEventListener('fetch', (event) => {
+// Fetch event - Network-first strategy
+self.addEventListener('fetch', event => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
+    // Try network first
     fetch(event.request)
-      .then((response) => {
+      .then(response => {
         // Cache successful responses
         if (response && response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
           });
         }
         return response;
       })
       .catch(() => {
-        // Fall back to cache on network error
-        return caches.match(event.request).then((response) => {
-          return response || new Response('Offline — data will sync when reconnected.', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({ 'Content-Type': 'text/plain' })
+        // Fall back to cache if network fails
+        return caches.match(event.request)
+          .then(response => {
+            if (response) {
+              console.log('[Service Worker] Serving from cache:', event.request.url);
+              return response;
+            }
+            // Return offline page or placeholder
+            return new Response('Offline - check your connection', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({
+                'Content-Type': 'text/plain'
+              })
+            });
           });
-        });
       })
   );
 });
